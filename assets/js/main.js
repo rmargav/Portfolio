@@ -202,3 +202,29 @@
   });
 
 })();
+
+ /**
+   * Contact form success message showcase
+   */
+  document.getElementById("contact-form").addEventListener("submit", sendMessage);
+
+function sendMessage(e) {
+  e.preventDefault();
+
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+  const subject = document.getElementById("subject").value;
+  const message = document.getElementById("message").value;
+  const status = document.getElementById("status");
+
+  status.style.color = "blue";
+  status.textContent = "Sending...";
+
+  setTimeout(() => {
+    status.style.color = "green";
+    status.textContent = `Thanks ${name}! I will reply to ${email} soon.`;
+
+    // Clear form
+    document.getElementById("contact-form").reset();
+  }, 1000);
+}

@@ -1474,3 +1474,9 @@ section,
 .contact .php-email-form button[type=submit]:hover {
   background: color-mix(in srgb, var(--accent-color), transparent 20%);
 }
+
+#status {
+  text-align: center;
+  padding: 10px;
+  margin-bottom: 15px;
+}

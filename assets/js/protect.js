@@ -1,80 +1,110 @@
 (function () {
 
-  // 🔒 Inject CSS (disable selection + highlight)
-  const style = document.createElement('style');
-  style.innerHTML = `
-    * {
-      -webkit-user-select: none !important;
-      -ms-user-select: none !important;
-      user-select: none !important;
+"use strict";
+
+/* =========================
+   🔒 CSS Protection Layer
+========================= */
+const style = document.createElement('style');
+style.innerHTML = `
+* {
+  -webkit-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+}
+
+img {
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+`;
+document.head.appendChild(style);
+
+
+/* =========================
+   🚫 Disable Right Click
+========================= */
+document.addEventListener('contextmenu', e => e.preventDefault());
+
+
+/* =========================
+   🚫 Block Copy Actions
+========================= */
+['copy', 'cut', 'paste'].forEach(event => {
+  document.addEventListener(event, e => e.preventDefault());
+});
+
+
+/* =========================
+   🚫 Disable Selection & Drag
+========================= */
+document.addEventListener('selectstart', e => e.preventDefault());
+document.addEventListener('dragstart', e => e.preventDefault());
+
+
+/* =========================
+   ⌨️ Keyboard Protection
+========================= */
+document.addEventListener('keydown', function (e) {
+
+  if (e.key === "F12") e.preventDefault();
+
+  if (e.ctrlKey) {
+    const blockedKeys = ['u', 's', 'p', 'c', 'x', 'v', 'a'];
+    if (blockedKeys.includes(e.key.toLowerCase())) {
+      e.preventDefault();
     }
+  }
 
-    body {
-      -webkit-touch-callout: none !important;
+  if (e.ctrlKey && e.shiftKey) {
+    const blocked = ['i', 'j', 'c'];
+    if (blocked.includes(e.key.toLowerCase())) {
+      e.preventDefault();
     }
-  `;
-  document.head.appendChild(style);
+  }
 
-  // 🚫 Disable Right Click
-  document.addEventListener('contextmenu', e => e.preventDefault());
+});
 
-  // 🚫 Disable Copy / Cut / Paste
-  ['copy', 'cut', 'paste'].forEach(event => {
-    document.addEventListener(event, e => e.preventDefault());
-  });
 
-  // 🚫 Disable Text Selection & Drag
-  document.addEventListener('selectstart', e => e.preventDefault());
-  document.addEventListener('dragstart', e => e.preventDefault());
+/* =========================
+   📸 Screenshot Awareness
+========================= */
+document.addEventListener('keyup', function (e) {
+  if (e.key === "PrintScreen") {
+    showWarning("Screenshots are discouraged on this page.");
+  }
+});
 
-  // 🚫 Disable Keyboard Shortcuts
-  document.onkeydown = function (e) {
-    // F12
-    if (e.keyCode === 123) return false;
 
-    // Ctrl+Shift+I/J/C
-    if (e.ctrlKey && e.shiftKey && [73, 74, 67].includes(e.keyCode)) return false;
+/* =========================
+   🔔 Warning UI
+========================= */
+function showWarning(message) {
+  let warning = document.createElement("div");
+  warning.innerText = message;
 
-    // Ctrl+U / Ctrl+S / Ctrl+P
-    if (e.ctrlKey && [85, 83, 80].includes(e.keyCode)) return false;
+  warning.style.position = "fixed";
+  warning.style.bottom = "20px";
+  warning.style.left = "50%";
+  warning.style.transform = "translateX(-50%)";
+  warning.style.background = "rgba(0,0,0,0.8)";
+  warning.style.color = "#fff";
+  warning.style.padding = "10px 20px";
+  warning.style.borderRadius = "8px";
+  warning.style.zIndex = "9999";
+  warning.style.fontSize = "14px";
 
-    // Ctrl+C / X / V / A
-    if (e.ctrlKey && [67, 88, 86, 65].includes(e.keyCode)) return false;
-  };
+  document.body.appendChild(warning);
 
-  // 🧠 DevTools Detection (basic)
-  setInterval(() => {
-    const widthThreshold = window.outerWidth - window.innerWidth > 160;
-    const heightThreshold = window.outerHeight - window.innerHeight > 160;
+  setTimeout(() => warning.remove(), 3000);
+}
 
-    if (widthThreshold || heightThreshold) {
-      document.body.innerHTML = "<h1 style='text-align:center;margin-top:20%;font-family:sans-serif;'>🚫 Inspect Not Allowed</h1>";
-    }
-  }, 1000);
 
-  // 🧨 Debugger trap
-  setInterval(() => {
-    debugger;
-  }, 2000);
-
-  // 🔍 Detect console open (trick)
-  const element = new Image();
-  Object.defineProperty(element, 'id', {
-    get: function () {
-      document.body.innerHTML = "<h1 style='text-align:center;margin-top:20%;'>🚫 Console Disabled</h1>";
-    }
-  });
-  console.log(element);
-
-  // 📸 PrintScreen detection with alert
-  document.addEventListener('keyup', function(e) {
-    if (e.key === "PrintScreen") {
-      alert("Screenshots are disabled on this page!");
-      // Optional: clear clipboard (works in some browsers)
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText("");
-      }
-    }
-  });
+/* =========================
+   🖼️ Protect Images (SAFE)
+========================= */
+document.querySelectorAll("img").forEach(img => {
+  img.setAttribute("draggable", "false");
+});
 
 })();
